@@ -18,11 +18,9 @@ def send_email_reminder():
     print("Starting to process Emails")
     now = datetime.datetime.now()
     get_reports = Reports.objects.filter(timing=now)
-    print(get_reports)
     for report in get_reports:
     
         non_deleted_qs = Task.objects.filter(user=report.user, deleted = False).order_by('priority')
-        print(non_deleted_qs)
 
         pending_qset = non_deleted_qs.filter(status = "PENDING")
         in_progress_qset = non_deleted_qs.filter(status = "IN_PROGRESS")
