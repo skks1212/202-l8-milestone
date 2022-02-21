@@ -17,7 +17,7 @@ from task_manager.celery import app
 def send_email_reminder():
     print("Starting to process Emails")
     now = datetime.datetime.now()
-    get_reports = Reports.objects.filter(timing=now)
+    get_reports = Reports.objects.filter(timing=now.hour)
     for report in get_reports:
     
         non_deleted_qs = Task.objects.filter(user=report.user, deleted = False).order_by('priority')
