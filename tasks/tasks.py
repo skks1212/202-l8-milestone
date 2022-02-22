@@ -12,7 +12,7 @@ from task_manager.celery import app
 @periodic_task(run_every=timedelta(hours=1))
 def send_reports():
     #reports that were not sent in 1 day
-    get_unsent_reports = Report.objects.select_for_update().filter(last_report__lte = (datetime.now(timezone.utc) - timedelta(days=1)))
+    get_unsent_reports = Report.objects.filter(last_report__lte = (datetime.now(timezone.utc) - timedelta(days=1)))
     
     stat_choices = [
         ["Pending", "PENDING"],

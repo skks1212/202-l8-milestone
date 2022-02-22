@@ -1,10 +1,13 @@
 
+import imp
 from django.db import models
 
 from django.contrib.auth.models import User
 
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save
+
+from datetime import datetime, timezone
 
 STATUS_CHOICES = (
     ("PENDING", "PENDING"),
@@ -38,7 +41,7 @@ class TaskHistory(models.Model):
 class Report(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null = True, blank = True)
     timing = models.IntegerField(default = 0)
-    last_report = models.DateTimeField(null=True)
+    last_report = models.DateTimeField(null=True, default=datetime.now(timezone.utc).replace(hour=0))
 
     def __str__(self):
         return f"{str(self.user)} : {str(self.timing)}" 
