@@ -4,8 +4,6 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from tasks.models import Task, Report
 from datetime import timedelta, datetime, timezone
-from django.db.models import Q
-from itertools import chain
 
 from celery.decorators import periodic_task
 
@@ -13,15 +11,8 @@ from task_manager.celery import app
 
 @periodic_task(run_every=timedelta(hours=1))
 def send_reports():
-    this_hour = datetime.now().hour
-
-    #reports that were not sent in 1 day, but not for this hour
-    get_unsent_reports = Report.objects.select_for_update().filter(last_report__lte = (datetime.now(timezone.utc) - timedelta(days=1))).filter(~Q(timing = this_hour))
-
-    #reports that are supposed to be sent at this hour
-    get_this_hour_reports = Report.objects.select_for_update().filter(timing = this_hour)
-
-    concat_reports = list(chain(get_unsent_reports, get_this_hour_reports))
+    #reports that were not sent in 1 day
+    get_unsent_reports = Report.objects.select_for_update().filter(last_report__lte = (datetime.now(timezone.utc) - timedelta(days=1)))
     
     stat_choices = [
         ["Pending", "PENDING"],
@@ -30,7 +21,7 @@ def send_reports():
         ["Cancelled", "CANCELLED"]
     ]
 
-    for report in concat_reports:
+    for report in get_unsent_reports:
         base_qs = Task.objects.filter(user=report.user, deleted = False).order_by('priority')
 
         email_content = f'Hey there {report.user.username}\nHere is your daily task summary:\n\n'
@@ -50,7 +41,7 @@ def send_reports():
 
         send_mail(f"You have {stat_choices[0][2]} pending and {stat_choices[1][2]} in progress tasks", email_content, "tasks@task_manager.org", [report.user.email])
 
-        report.last_report = datetime.now(timezone.utc)
+        report.last_report = datetime.now(timezone.utc).replace(hour=report.timing, second=0)
         report.save()
 
         print(f"Completed Processing User {report.user.id}")
