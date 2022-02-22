@@ -11,7 +11,7 @@ from celery.decorators import periodic_task
 
 from task_manager.celery import app
 
-@periodic_task(run_every=timedelta(seconds=5))
+@periodic_task(run_every=timedelta(hours=1))
 def send_reports():
     this_hour = datetime.now().hour
 
