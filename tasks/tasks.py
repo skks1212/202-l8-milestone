@@ -41,7 +41,7 @@ def send_reports():
 
         send_mail(f"You have {stat_choices[0][2]} pending and {stat_choices[1][2]} in progress tasks", email_content, "tasks@task_manager.org", [report.user.email])
 
-        report.last_report = datetime.now(timezone.utc).replace(hour=report.timing, second=0)
+        report.last_report = datetime.now(timezone.utc).replace(hour=report.timing)
         report.save()
 
         print(f"Completed Processing User {report.user.id}")
