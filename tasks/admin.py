@@ -5,5 +5,5 @@ from django.contrib import admin
 from tasks.models import *
 
 admin.sites.site.register(Task)
-admin.site.register(Reports)
+admin.site.register(Report)
 admin.site.register(TaskHistory)

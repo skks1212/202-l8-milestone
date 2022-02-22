@@ -35,9 +35,10 @@ class TaskHistory(models.Model):
     def __str__(self):
         return str(self.task)
 
-class Reports(models.Model):
+class Report(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null = True, blank = True)
     timing = models.IntegerField(default = 0)
+    last_report = models.DateTimeField(null=True)
 
     def __str__(self):
         return f"{str(self.user)} : {str(self.timing)}" 
@@ -61,7 +62,7 @@ def generateReport(instance, **kwargs):
     try:
         user = User.objects.get(pk=instance.id)
         try:
-            report = Reports.objects.get(user=user)
+            report = Report.objects.get(user=user)
         except:
             report = None
     except:
@@ -71,7 +72,7 @@ def generateReport(instance, **kwargs):
     print("hello ",user)
 
     if user is not None and report is None:
-        Reports.objects.create(
+        Report.objects.create(
             user=user,
             timing=0
         )

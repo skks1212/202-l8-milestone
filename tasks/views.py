@@ -8,7 +8,7 @@ from django.views.generic.detail import DetailView
 
 from django.forms import ModelForm, ValidationError
 
-from tasks.models import Task, TaskHistory, Reports
+from tasks.models import Task, TaskHistory, Report
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
@@ -68,7 +68,7 @@ class GenericTaskView(LoginRequiredMixin, ListView):
         context = {"tasks" : self.get_queryset()}
         context['completed_tasks'] = Task.objects.filter(deleted=False, completed=True, user=self.request.user).count()
         context['total_tasks'] = Task.objects.filter(deleted=False, user=self.request.user).count()
-        context['report_id'] = Reports.objects.get(user=self.request.user).id
+        context['report_id'] = Report.objects.get(user=self.request.user).id
         return context
 
 

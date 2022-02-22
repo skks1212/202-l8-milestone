@@ -1,23 +1,13 @@
-from django import forms
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
-from django.views import View
-from django.views.generic.list import ListView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.detail import DetailView
+from django.views.generic.edit import UpdateView
 
-from django.forms import ModelForm, ValidationError
+from django.forms import ModelForm
 
-from tasks.models import Task, TaskHistory, Reports
-
-from django.contrib.auth.mixins import LoginRequiredMixin
-
-from django.contrib.auth.mixins import LoginRequiredMixin
+from tasks.models import Report
 
 class ReportForm(ModelForm):
 
     class Meta:
-        model = Reports
+        model = Report
         fields = ["timing"]
     
     def __init__(self, *args, **kwargs):
@@ -28,10 +18,10 @@ class ReportForm(ModelForm):
        self.fields['timing'].widget.attrs.update({'class' : input_styling})
 
 class GenericReportUpdateView(UpdateView):
-    model = Reports
+    model = Report
     form_class = ReportForm
     template_name = "report_update.html"
     success_url = "/tasks"
 
     def get_queryset(self):
-        return Reports.objects.filter(user=self.request.user)
+        return Report.objects.filter(user=self.request.user)
